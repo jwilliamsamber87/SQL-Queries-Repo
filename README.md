@@ -14,8 +14,17 @@ Hi there! 👋 Welcome to my SQL playground. Here you’ll find organized folder
 
 I’m Jessica Williams, a process engineering technician transitioning to data analytics and software development! I love turning raw data into actionable insights and am currently studying for the Tableau Data Analyst certification. 🌟
 
+
+
+leak_test_repeated_failures.sql — Analyzes repeated failures at the leak test flowstep across BMA lines, helping to detect recurring issues early.
+
 ## 🚀 How to Use
 
 1. Clone this repo to your local machine:
    ```bash
    git clone https://github.com/jwilliamsamber87/sql-queries-repo.git
+
+
+
+
+   
