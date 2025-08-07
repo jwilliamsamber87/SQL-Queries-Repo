@@ -1,6 +1,12 @@
--- adhesive_zone2_with_downstream_tracking.sql
+-- zone2_adhesive_downstream_failures.sql
+-- 
+-- Description:
+-- This query identifies modules processed in Zone 2 during the adhesive application flowstep (2300)
+-- and tracks whether they later failed quality checks in Zone 3 or Zone 4.
+-- It returns key identifiers, timestamps, and time spent between process zones
+-- to support root cause analysis for downstream failures (e.g. excessive adhesive).
 
--- Step 1: Get Zone 2 adhesive application data
+-- Step 1: Get records from Zone 2 adhesive flowstep
 WITH zone2_adhesive AS (
     SELECT
         d.line_id,
@@ -17,7 +23,7 @@ WITH zone2_adhesive AS (
         AND d.flowstep = 2300
 ),
 
--- Step 2: Get downstream (Z3 and Z4) timestamps for the same pallet
+-- Step 2: Pull timestamps from downstream zones (Zone 3 and 4)
 downstream_zones AS (
     SELECT
         pallet_id,
@@ -31,7 +37,7 @@ downstream_zones AS (
         pallet_id
 )
 
--- Step 3: Join both sets to compute time spent and return final output
+-- Step 3: Join upstream and downstream data and calculate time between zones
 SELECT
     z2.line_id AS zone2_line_id,
     z2.zone2_timestamp,
@@ -40,7 +46,6 @@ SELECT
     z2.defect_description,
     dz.zone3_timestamp,
     dz.zone4_timestamp,
-    -- Calculate duration from zone 2 to 3 and 4
     EXTRACT(EPOCH FROM dz.zone3_timestamp - z2.zone2_timestamp)/60 AS time_to_zone3_minutes,
     EXTRACT(EPOCH FROM dz.zone4_timestamp - z2.zone2_timestamp)/60 AS time_to_zone4_minutes
 FROM
@@ -49,3 +54,5 @@ LEFT JOIN
     downstream_zones dz ON z2.pallet_id = dz.pallet_id
 ORDER BY
     z2.zone2_timestamp DESC;
+
+
