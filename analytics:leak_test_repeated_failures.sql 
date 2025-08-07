@@ -1,0 +1,22 @@
+-- Detect repeated leak test failures on Battery Module Assembly lines
+SELECT
+    line_id,
+    pallet_id,
+    COUNT(*) AS failure_count,
+    MAX(spec_value) AS max_spec_value,
+    MIN(timestamp) AS first_failure_time,
+    MAX(timestamp) AS last_failure_time
+FROM
+    defects_log
+WHERE
+    line_id IN ('BMA1', 'BMA2', 'BMA3')
+    AND flowstep = 'Leak Test'
+    AND status = 'Fail'
+GROUP BY
+    line_id,
+    pallet_id
+HAVING
+    COUNT(*) > 1
+ORDER BY
+    failure_count DESC,
+    max_spec_value DESC;
